@@ -14,27 +14,38 @@ datasource db {
 }
 
 model Organization {
-  id String @id @default(uuid())
-  name String @unique @db.VarChar(255)
+  id        String   @id @default(uuid())
+  name      String   @unique @db.VarChar(255)
   createdAt DateTime @default(now()) @db.Timestamp()
   updatedAt DateTime @default(now()) @db.Timestamp()
+  User      User[]
 }
 
 model User {
-  id String @id @default(uuid())
-  first_name String @db.VarChar(50)
-  last_name String @db.VarChar(50)
-  email String @unique @db.VarChar(320)
-  password String @db.VarChar(255)
-  organisation_id String @db.VarChar()
-  organisation Organization @relation(fields:[organisation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  createdAt DateTime @default(now()) @db.Timestamp()
-  updatedAt DateTime @default(now()) @db.Timestamp()
+  id              String       @id @default(uuid())
+  first_name      String       @db.VarChar(50)
+  last_name       String       @db.VarChar(50)
+  email           String       @unique @db.VarChar(320)
+  password        String       @db.VarChar(255)
+  organisation_id String       @db.VarChar()
+  organisation    Organization @relation(fields: [organisation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt       DateTime     @default(now()) @db.Timestamp()
+  updatedAt       DateTime     @default(now()) @db.Timestamp()
+  UserRole        UserRole[]
 }
 
-model Roles {
-  id String @id @default(uuid())
-  role String @unique @db.VarChar()
-  createdAt DateTime @default(now()) @db.Timestamp()
-  updatedAt DateTime @default(now()) @db.Timestamp()
+model Role {
+  id        String     @id @default(uuid())
+  role      String     @unique @db.VarChar()
+  createdAt DateTime   @default(now()) @db.Timestamp()
+  updatedAt DateTime   @default(now()) @db.Timestamp()
+  UserRole  UserRole[]
+}
+
+model UserRole {
+  id      String @id @default(uuid())
+  user_id String @db.VarChar
+  role_id String @db.VarChar
+  users   User   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  roles   Role   @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
