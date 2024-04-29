@@ -1,14 +1,22 @@
-import * as dotenv from 'dotenv'
-dotenv.config("../.env")
+import * as dotenv from "dotenv";
+dotenv.config("../.env");
 
-import http from 'node:http'
-import https from 'node:https'
-import fs from 'fs'
-import app from '../src/index.js'
+import http from "node:http";
+import https from "node:https";
+import fs from "fs";
+import app from "../src/index.js";
 
+const main = (() => {
 
-const server = http.createServer(app)
+    'use strict';
 
-server.listen(3000, () => {
-    console.log(`Server running on localhost port 3000`)
-})
+    const server = http.createServer(app);
+
+    const port = process.env.PORT
+    const host = process.env.HOST 
+
+    server.listen(port, () => {
+        console.log(`Server running from ${host} port ${port}`);
+    })
+
+})()

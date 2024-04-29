@@ -9,7 +9,7 @@
     "nodemon": "^3.1.0",
     "prisma": "^5.13.0"
   },
-  "name": "shub-test-backend",
+  "name": "sochub-test-backend",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -20,9 +20,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./bin/www.js",
-    "dev": "nodemon ./bin/www.js"
+    "test": "jest",
+    "start": "NODE_ENV=production nodemon ./bin/www.js",
+    "dev": "NODE_ENV=development nodemon ./bin/www.js"
   },
   "keywords": [],
   "author": "",
