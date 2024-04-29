@@ -1,12 +1,8 @@
-import express from 'express'
+import express from "express";
+import organizationRouter from "./organization.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.use("/",(req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "Hello, World"
-    })
-})
+router.use("/api/v1", organizationRouter);
 
-export default router
+export default router;
