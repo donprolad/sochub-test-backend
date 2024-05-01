@@ -1,0 +1,10 @@
+services:
+  api:
+    image: sochub/api
+    ports:
+      - "3000"
+    networks:
+      - api-tier
+    
+networks:
+  api-tier: {}
