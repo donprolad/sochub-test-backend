@@ -7,7 +7,7 @@ export const getOrganizationById = async (req, res) => {
 
     const foundOrganization = await prisma.organization.findUnique({
       where: {
-        id: id,
+        id,
       },
     });
 
@@ -52,6 +52,33 @@ export const createOrganization = async (req, res) => {
     res.status(400).json({
       success: true,
       message: "Error occurred, unable to create organization",
+      error,
+    });
+  }
+};
+
+export const updateOrganizationById = async (req, res) =>{
+  try {
+    const prisma = new PrismaClient();
+
+    const updatedOrganization = await prisma.organization.update({
+      where: {
+        id: req?.params?.id,
+      },
+      data: {
+        ...req?.body,
+      },
+    });
+
+    res.status(400).json({
+      success: true,
+      message: "Update organisation",
+      data: updatedOrganization,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "Error occurred, unable to update organisation",
       error,
     });
   }

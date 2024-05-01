@@ -1,2 +1,2 @@
 # sochub-test-backend
-API
+Simple REST API
