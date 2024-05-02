@@ -11,3 +11,13 @@ HTTPS_KEY_PATH=<path_to_key_file>
 # See the documentation for all the connection string options: https://pris.ly/d/connection-strings
 
 DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
+
+# TOKEN
+CLIENT_ID=<client_id>
+CLIENT_SECRET=<client_secret>
+GRANT_TYPE=<grant_type>
+CLIENT_PUBLIC_KEY=<public_key>
+AUTH_DOMAIN=<domain>
+
+# TESTING
+TEST_AUTH_DOMAIN=<test_domain>

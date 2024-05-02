@@ -50,7 +50,7 @@ export const createOrganization = async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
-      success: true,
+      success: false,
       message: "Error occurred, unable to create organization",
       error,
     });
