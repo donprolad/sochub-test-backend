@@ -1,5 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 
+// export const registerUser = async(req, res) => {
+//   try {
+//     const prisma = new PrismaClient()
+
+
+//   } catch (err) {
+
+//   }
+// }
+
 export const getOrganization = async (req, res, next) => {
   try {
     const prisma = new PrismaClient();
@@ -27,7 +37,7 @@ export const getOrganization = async (req, res, next) => {
       next();
     }
   } catch (error) {
-    console.log(error);
+
     res.status(400).json({
       success: false,
       message: "Error occurred, unable to find organization",
@@ -51,7 +61,7 @@ export const createUserByOrganizationId = async (req, res) => {
       data: createdUser,
     });
   } catch (error) {
-    console.log(error);
+    
     res.status(400).json({
       success: false,
       message: "Unable to create user",
@@ -77,7 +87,7 @@ export const getAllUsers = async (req, res) => {
           data: allUsers,
         });
   } catch (error) {
-    console.error(error);
+    
     res.status(400).json({
       success: false,
       message: "Error occurred, unable to find users",
