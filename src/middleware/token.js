@@ -18,7 +18,7 @@ export const authorizeToken = async (req, res, next) => {
     };
 
     const publicKey = await jose.importJWK(jwk, alg);
-    // const { payload, protectedHeader } = await jose.jwtVerify(accessToken, publicKey)
+
     const { payload } = await jose.jwtVerify(accessToken, publicKey);
 
     tokenIsValid(payload)
