@@ -16,7 +16,6 @@ describe("token utility module", () => {
 
   test("check expiry time on token", () => {
    
-        //{ alg: 'RS256', typ: 'JWT', kid: 'svPzgAJl9RqidfrC6qcwV' } 
     const expired = checkTokenExpiry(payload)
     expect(expired).toBe(false)
   });
