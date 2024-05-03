@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "./helper.js"
 
 // export const registerUser = async(req, res) => {
 //   try {
@@ -12,7 +12,6 @@ import { PrismaClient } from "@prisma/client";
 
 export const getOrganization = async (req, res, next) => {
   try {
-    const prisma = new PrismaClient();
     const id = req?.params?.id;
 
     const foundOrganization = await prisma.organization.findUnique({
@@ -49,7 +48,7 @@ export const getOrganization = async (req, res, next) => {
 export const createUserByOrganizationId = async (req, res) => {
   try {
     const { prisma, organisation } = res?.locals
-    
+
     const createdUser = await prisma.user.create({
       data: {
         organisation_id: organisation?.id,
@@ -74,7 +73,7 @@ export const createUserByOrganizationId = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const prisma = new PrismaClient();
+
     const allUsers = await prisma.user.findMany();
 
     allUsers.length === 0

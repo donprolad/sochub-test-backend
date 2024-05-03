@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from './helper.js'
 
 export const getOrganizationById = async (req, res) => {
   try {
-    const prisma = new PrismaClient();
     const id = req?.params?.id;
 
     const foundOrganization = await prisma.organization.findUnique({
@@ -33,8 +32,6 @@ export const getOrganizationById = async (req, res) => {
 
 export const createOrganization = async (req, res) => {
   try {
-    const prisma = new PrismaClient();
-
     const { name } = req.body;
 
     const createOrganization = await prisma.organization.create({
@@ -59,7 +56,6 @@ export const createOrganization = async (req, res) => {
 
 export const updateOrganizationById = async (req, res) =>{
   try {
-    const prisma = new PrismaClient();
 
     const updatedOrganization = await prisma.organization.update({
       where: {
