@@ -1,21 +1,46 @@
-import * as dotenv from 'dotenv'
-dotenv.config("../../.env")
+import * as dotenv from "dotenv";
+dotenv.config("../../.env");
 
-export const checkValidAuthdomain = (domain) => (payload) =>
+/**
+ * @function checkValidAuthdomain
+ * @param domain
+ * @param {object} payload
+ * @description partially applied function that checks the token auth domain
+ */
+export const checkValidAuthDomain = (domain) => (payload) =>
   domain === payload?.iss ? true : false;
 
-export const checkTokenExpiry = (payload) => {
-  const currentEpochDate = Math.floor(new Date().getTime()/1000.0)
+/**
+ * @function checkTokenExpiry
+ * @param {object} payload
+ * @description checks if token epoch time is expired.
+ */
+export const checkTokenExpiry = currentEpochDate => (payload) =>
+  payload?.exp > currentEpochDate ? true : false;
 
-  return payload?.exp > currentEpochDate ? true : false
-}
+/**
+ * @function checkTokenAudience
+ * @param  {...string} searchParams
+ * @param {object} payload
+ * @description checks the if token audience is correct.
+ */
+export const checkTokenAudience = (...searchParams) => (payload) =>
+  searchParams
+    .map((searchItem) =>
+      payload?.aud.search(searchItem) !== -1 ? true : false
+    )
+    .reduce((acc, v) => (acc = acc && v), true);
 
-export const tokenPipe = (...fns) => payload => 
-  [...fns].map(f => f(payload))
-    .reduce((acc,v) => acc = acc && v , true)
-
+/**
+ * @function tokenPipe
+ * @param  {...function} fns
+ * @description validation pipeline for the properties of a decoded token.
+ */
+export const tokenPipe = (...fns) => (payload) =>
+  fns.map((f) => f(payload)).reduce((acc, v) => (acc = acc && v), true);
 
 export default tokenPipe(
-  checkValidAuthdomain(process.env.AUTH_DOMAIN),
-  checkTokenExpiry
-)
+  checkValidAuthDomain(process.env.AUTH_DOMAIN),
+  checkTokenAudience(process.env.HOST, process.env.PORT),
+  checkTokenExpiry(Math.floor(new Date().getTime() / 1000.0))
+);

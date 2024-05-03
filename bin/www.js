@@ -17,8 +17,8 @@ const main = (() => {
         console.log(`Server running from ${host} port ${port}`);
     })
 
-    // process.on('unhandledRejection', (error) =>{
-    //     console.error('unhandledRejection', error.message)
-    // })
+    process.on('unhandledRejection', (error) =>{
+        console.error('unhandledRejection', error.message)
+    })
 
 })()

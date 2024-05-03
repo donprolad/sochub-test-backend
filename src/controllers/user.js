@@ -48,9 +48,11 @@ export const getOrganization = async (req, res, next) => {
 
 export const createUserByOrganizationId = async (req, res) => {
   try {
-    const createdUser = await res?.locals?.prisma.user.create({
+    const { prisma, organisation } = res?.locals
+    
+    const createdUser = await prisma.user.create({
       data: {
-        organisation_id: res?.locals?.organisation.id,
+        organisation_id: organisation?.id,
         ...req?.body,
       },
     });
