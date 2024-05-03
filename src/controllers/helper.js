@@ -4,5 +4,7 @@ import { PrismaClient } from '@prisma/client'
 
 const prismaPartial = (client) => (f, ...args) => f(client, args);
 
+const prisma = new PrismaClient()
 
-export default prismaPartial
+
+export default prisma
