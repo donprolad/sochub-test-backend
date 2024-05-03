@@ -20,8 +20,8 @@ describe("token utility module", () => {
   };
 
   test("check expiry time on token has lapsed", () => {
-    const validToken = checkTokenExpiry(payload);
-    expect(validToken).toBe(false);
+    const validToken = checkTokenExpiry(Math.floor(new Date().getTime() / 1000.0));
+    expect(validToken(payload)).toBe(false);
   });
 
   test("check expiry time on token is greater than current time", () => {
@@ -29,9 +29,9 @@ describe("token utility module", () => {
       Math.floor(new Date().getTime() / 1000.0) + 3600;
     const payloadCopy = { ...payload, exp: notExpiredEpochTime };
 
-    const expired = checkTokenExpiry(payloadCopy);
+    const validToken = checkTokenExpiry(Math.floor(new Date().getTime() / 1000.0));
 
-    expect(expired).toBe(true);
+    expect(validToken(payloadCopy)).toBe(true);
   });
 
   test("check valid auth domain", () => {
@@ -59,7 +59,7 @@ describe("token pipeline module", () => {
 
   test("run through token validation pipeline", () => {
     const validToken = tokenPipe(
-      checkTokenExpiry,
+      checkTokenExpiry(Math.floor(new Date().getTime() / 1000.0)),
       checkTokenAudience(process.env.HOST, process.env.PORT),
       checkValidAuthDomain(process.env.TEST_AUTH_DOMAIN)
     );
