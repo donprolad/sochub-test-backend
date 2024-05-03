@@ -15,16 +15,19 @@ import {
 const organisationRouter = express.Router();
 
 organisationRouter
+  .use(authorizeToken)
   .route("/organization")
-  .post(authorizeToken, createOrganization);
+  .post(createOrganization);
 
 organisationRouter
+  .use(authorizeToken)
   .route("/organization/:id")
-  .get(authorizeToken, getOrganizationById)
-  .patch(authorizeToken, updateOrganizationById);
+  .get(getOrganizationById)
+  .patch(updateOrganizationById);
 
 organisationRouter
+  .use(authorizeToken)
   .route("/organization/:id/user")
-  .post(authorizeToken, getOrganization, createUserByOrganizationId);
+  .post(getOrganization, createUserByOrganizationId);
 
 export default organisationRouter;
