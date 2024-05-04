@@ -1,81 +1,32 @@
-import prisma from './helper.js'
+import {
+  getOrganizationByIdHandler,
+  updateOrganisationByIdHandler,
+  createOrganisationHandler,
+} from "../db/organisation.js";
 
-export const getOrganizationById = async (req, res) => {
-  try {
-    const id = req?.params?.id;
+export const getOrganizationById = async (req, res) =>
+  await getOrganizationByIdHandler(req?.params?.id)
+    .then((found) =>
+      found?.success 
+      ? res.status(200).json(found) 
+      : res.status(400).json(found)
+    )
+    .catch((err) => res.status(400).json(err));
 
-    const foundOrganization = await prisma.organization.findUnique({
-      where: {
-        id,
-      },
-    });
+export const createOrganization = async (req, res) =>
+  await createOrganisationHandler(req?.body)
+    .then((created) =>
+      created?.success
+        ? res.status(201).json(created)
+        : res.status(400).json(created)
+    )
+    .catch((err) => res.status(400).json(err));
 
-    foundOrganization == null
-      ? res.status(400).json({
-          success: true,
-          message: "Not found",
-          data: {},
-        })
-      : res.status(200).json({
-          success: true,
-          message: "Found the following organization",
-          data: foundOrganization,
-        });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "Error occurred, unable to find organization",
-      error,
-    });
-  }
-};
-
-export const createOrganization = async (req, res) => {
-  try {
-    const { name } = req.body;
-
-    const createOrganization = await prisma.organization.create({
-      data: {
-        name,
-      },
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Found the following organization",
-      data: createOrganization,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "Error occurred, unable to create organization",
-      error,
-    });
-  }
-};
-
-export const updateOrganizationById = async (req, res) =>{
-  try {
-
-    const updatedOrganization = await prisma.organization.update({
-      where: {
-        id: req?.params?.id,
-      },
-      data: {
-        ...req?.body,
-      },
-    });
-
-    res.status(400).json({
-      success: true,
-      message: "Update organisation",
-      data: updatedOrganization,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "Error occurred, unable to update organisation",
-      error,
-    });
-  }
-};
+export const updateOrganizationById = async (req, res) =>
+  await updateOrganisationByIdHandler(req?.params?.id, req?.body)
+    .then((data) =>
+      data?.success
+        ? res.status(201).json(data)
+        : res.status(400).json(data)
+    )
+    .catch((err) => res.status(400).json(err));

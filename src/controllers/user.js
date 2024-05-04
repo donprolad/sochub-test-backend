@@ -1,14 +1,5 @@
-import prisma from "./helper.js"
-
-// export const registerUser = async(req, res) => {
-//   try {
-//     const prisma = new PrismaClient()
-
-
-//   } catch (err) {
-
-//   }
-// }
+import prisma from "../db/helper.js";
+import { getAllUsersHandler } from "../db/user.js";
 
 export const getOrganization = async (req, res, next) => {
   try {
@@ -21,22 +12,17 @@ export const getOrganization = async (req, res, next) => {
     });
 
     if (foundOrganization?.id == null) {
-
-      res.status(400).json({
+      res.status(200).json({
         success: true,
         message: "Not found",
         data: foundOrganization,
       });
-
     } else {
-
-      res.locals.prisma = prisma;
       res.locals.organisation = foundOrganization;
 
       next();
     }
   } catch (error) {
-
     res.status(400).json({
       success: false,
       message: "Error occurred, unable to find organization",
@@ -47,7 +33,7 @@ export const getOrganization = async (req, res, next) => {
 
 export const createUserByOrganizationId = async (req, res) => {
   try {
-    const { prisma, organisation } = res?.locals
+    const { organisation } = res?.locals;
 
     const createdUser = await prisma.user.create({
       data: {
@@ -62,7 +48,6 @@ export const createUserByOrganizationId = async (req, res) => {
       data: createdUser,
     });
   } catch (error) {
-    
     res.status(400).json({
       success: false,
       message: "Unable to create user",
@@ -71,28 +56,9 @@ export const createUserByOrganizationId = async (req, res) => {
   }
 };
 
-export const getAllUsers = async (req, res) => {
-  try {
-
-    const allUsers = await prisma.user.findMany();
-
-    allUsers.length === 0
-      ? res.status(200).json({
-          success: true,
-          message: "No users found, should probably add some",
-          data: allUsers,
-        })
-      : res.status(200).json({
-          success: true,
-          message: "Found the following users",
-          data: allUsers,
-        });
-  } catch (error) {
-    
-    res.status(400).json({
-      success: false,
-      message: "Error occurred, unable to find users",
-      error,
-    });
-  }
-};
+export const getAllUsers = async (_, res) =>
+  await getAllUsersHandler()
+    .then((users) =>
+      users?.success ? res.status(200).json(users) : res.status(400).json(users)
+    )
+    .catch((err) => res.status(400).json(err));
