@@ -1,8 +1,10 @@
 import * as dotenv from "dotenv";
 dotenv.config("../../.env");
 import * as jose from "jose";
+import axios from "axios";
 
 import tokenIsValid from "../utils/token-utils.js";
+import options from "../api/tokens.js";
 
 export const authorizeToken = async (req, res, next) => {
   try {
@@ -34,4 +36,44 @@ export const authorizeToken = async (req, res, next) => {
       error,
     });
   }
+};
+
+export const getToken = async (req, res) => {
+  const { client_id, grant_type, client_secret, audience } = req.headers;
+
+  /**
+   * TODO
+   * 1. build token credential validation pipeline
+   */
+  const validCredentials = [
+    client_id === process.env.CLIENT_ID,
+    client_secret === process.env.CLIENT_SECRET,
+    grant_type === process.env.GRANT_TYPE,
+    audience === process.env.AUDIENCE,
+  ];
+
+  const valid = validCredentials.reduce((acc, v) => (acc = acc && v), true);
+
+  valid
+    ? await axios
+        .request(options)
+        .then((token) =>
+          res.status(200)
+            .json({
+              success: true,
+              message: "Token allocation, successful",
+              data: token,
+            })
+        )
+        .catch((error) =>
+          res.status(400).json({
+            success: false,
+            message: "Token allocation, unsuccessful",
+            error,
+          })
+        )
+    : res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
 };
