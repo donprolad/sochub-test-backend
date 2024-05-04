@@ -62,10 +62,10 @@ export const getToken = async (req, res) => {
             .json({
               success: true,
               message: "Token allocation, successful",
-              data: token,
+              data: token?.data,
             })
         )
-        .catch((error) =>
+        .catch((error) => 
           res.status(400).json({
             success: false,
             message: "Token allocation, unsuccessful",
