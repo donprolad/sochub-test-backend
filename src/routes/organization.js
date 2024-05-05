@@ -8,7 +8,6 @@ import {
 } from "../controllers/organization.js";
 
 import {
-  getOrganization,
   createUserByOrganizationId,
 } from "../controllers/user.js";
 
@@ -28,6 +27,6 @@ organisationRouter
 organisationRouter
   .use(authorizeToken)
   .route("/organization/:id/user")
-  .post(getOrganization, createUserByOrganizationId);
+  .post(createUserByOrganizationId);
 
 export default organisationRouter;

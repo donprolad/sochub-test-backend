@@ -1,5 +1,37 @@
 import prisma from "./helper.js";
 
+export const createUserByOrganisationByHandler = async (
+  organizationId,
+  userData
+) =>
+  await prisma.user
+    .create({
+      data: {
+        organisation_id: organizationId,
+        ...userData,
+      },
+    })
+
+    .then((createdUser) =>
+      createdUser != null
+        ? {
+            success: true,
+            message: "Created User",
+            data: createdUser,
+          }
+        : {
+            success: false,
+            message: "Unable to create user, or exists already",
+            data: createdUser,
+          }
+    )
+
+    .catch((err) => ({
+      success: false,
+      message: "Error occurred, unable to create a user",
+      err,
+    }));
+
 export const getAllUsersHandler = async () =>
   await prisma.user
     .findMany()

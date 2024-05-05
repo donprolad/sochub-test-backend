@@ -1,7 +1,7 @@
 import express from "express";
 import organizationRouter from "./organization.js";
 import userRouter from "./user.js";
-import systemRouter from "./system.js";
+import systemRouter from "./global.js";
 
 const router = express.Router();
 

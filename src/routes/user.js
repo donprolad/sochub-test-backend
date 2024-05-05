@@ -9,6 +9,9 @@ import {
 
 const userRouter = express.Router()
 
-userRouter.route("/users").get(authorizeToken, getAllUsers)
+userRouter
+  .use(authorizeToken)
+  .route("/users")
+  .get(getAllUsers)
 
 export default userRouter

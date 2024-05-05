@@ -39,10 +39,21 @@ describe("token utility module", () => {
     expect(validauthDomain(payload)).toBe(true);
   });
 
-  test("check token audience", () => {
+  test("check invalid auth domain", () => {
+    const validauthDomain = checkValidAuthDomain("http://injectedwiththepoison.com")
+    expect(validauthDomain(payload)).toBe(false)
+  })
+
+  test("check token audience with correct host", () => {
     const audience = checkTokenAudience(process.env.HOST, process.env.PORT);
 
     expect(audience(payload)).toBe(true);
+  });
+
+  test("check token audience with invalid host", () => {
+    const audience = checkTokenAudience(null, 1234);
+
+    expect(audience(payload)).toBe(false);
   });
 });
 

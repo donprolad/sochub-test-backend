@@ -3,7 +3,7 @@ dotenv.config("../../.env");
 
 /**
  * @function checkValidAuthdomain
- * @param domain
+ * @param {string} domain
  * @param {object} payload
  * @description partially applied function that checks the token auth domain
  */
@@ -12,8 +12,9 @@ export const checkValidAuthDomain = (domain) => (payload) =>
 
 /**
  * @function checkTokenExpiry
+ * @param {Date} currentEpochDate
  * @param {object} payload
- * @description checks if token epoch time is expired.
+ * @description partially applied function that checks if token epoch time is expired.
  */
 export const checkTokenExpiry = currentEpochDate => (payload) =>
   payload?.exp > currentEpochDate ? true : false;
@@ -22,7 +23,7 @@ export const checkTokenExpiry = currentEpochDate => (payload) =>
  * @function checkTokenAudience
  * @param  {...string} searchParams
  * @param {object} payload
- * @description checks the if token audience is correct.
+ * @description partially applied function that checks if the token audience is correct.
  */
 export const checkTokenAudience = (...searchParams) => (payload) =>
   searchParams
@@ -34,7 +35,8 @@ export const checkTokenAudience = (...searchParams) => (payload) =>
 /**
  * @function tokenPipe
  * @param  {...function} fns
- * @description validation pipeline for the properties of a decoded token.
+ * @param  {payload} payload
+ * @description validation pipeline of functions for the properties of a decoded token payload.
  */
 export const tokenPipe = (...fns) => (payload) =>
   fns.map((f) => f(payload)).reduce((acc, v) => (acc = acc && v), true);
