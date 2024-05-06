@@ -1,5 +1,28 @@
 import prisma from "./helper.js";
 
+export const getAllOrganisationsHandler = async () =>
+  await prisma.organization
+    .findMany()
+    .then((organizations) =>
+      organizations.length > 0
+        ? {
+            success: true,
+            message: "Found the following organisations",
+            data: organizations,
+          }
+        : {
+            success: true,
+            message: "Empty organisations",
+            data: organizations,
+          }
+    )
+
+    .catch((err) => ({
+      success: false,
+      message: "Error occurred, unable to find organisations.",
+      err,
+    }));
+
 export const getOrganizationByIdHandler = async (id) =>
   await prisma.organization
     .findUnique({

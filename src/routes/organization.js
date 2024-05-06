@@ -2,6 +2,7 @@ import express from "express";
 import { authorizeToken } from "../middleware/token.js";
 
 import {
+  getAllOrganisations,
   getOrganizationById,
   createOrganization,
   updateOrganizationById,
@@ -16,6 +17,7 @@ const organisationRouter = express.Router();
 organisationRouter
   .use(authorizeToken)
   .route("/organization")
+  .get(getAllOrganisations)
   .post(createOrganization);
 
 organisationRouter
