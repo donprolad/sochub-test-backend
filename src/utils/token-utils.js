@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config("../../.env");
+import { getCurrentEpochDate } from "./date-utils.js";
 
 /**
  * @function checkValidAuthdomain
@@ -16,8 +17,10 @@ export const checkValidAuthDomain = (domain) => (payload) =>
  * @param {object} payload
  * @description partially applied function that checks if token epoch time is expired.
  */
-export const checkTokenExpiry = currentEpochDate => (payload) =>
-  payload?.exp > currentEpochDate ? true : false;
+export const checkTokenExpiry = (currentEpochDate) => (payload) =>
+  currentEpochDate == null
+    ? false
+    : payload?.exp > currentEpochDate ? true : false;
 
 /**
  * @function checkTokenAudience
@@ -44,5 +47,5 @@ export const tokenPipe = (...fns) => (payload) =>
 export default tokenPipe(
   checkValidAuthDomain(process.env.AUTH_DOMAIN),
   checkTokenAudience(process.env.HOST, process.env.PORT),
-  checkTokenExpiry(Math.floor(new Date().getTime() / 1000.0))
+  checkTokenExpiry(getCurrentEpochDate())
 );

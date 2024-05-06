@@ -10,14 +10,14 @@ export const createUserByOrganizationId = async (req, res) =>
       foundOrganization?.success
         ? createUserByOrganisationByHandler(
             foundOrganization?.data?.id,
-            req.body
+            req?.body
           )
         : res.status(400).json(foundOrganization)
     )
 
     .then((createdUser) =>
       createdUser.success
-        ? res.status(200).json(createdUser)
+        ? res.status(201).json(createdUser)
         : res.status(400).json(createdUser)
     )
 
