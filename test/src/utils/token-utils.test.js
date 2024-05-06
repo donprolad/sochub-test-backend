@@ -8,6 +8,8 @@ import {
   tokenPipe,
 } from "../../../src/utils/token-utils";
 
+import { getCurrentEpochDate } from "../../../src/utils/date-utils.js"
+
 describe("token utility module", () => {
   const payload = {
     iss: "https://app-domain.org.company.com/",
@@ -20,7 +22,7 @@ describe("token utility module", () => {
   };
 
   test("check expiry time on token has lapsed", () => {
-    const validToken = checkTokenExpiry(Math.floor(new Date().getTime() / 1000.0));
+    const validToken = checkTokenExpiry(getCurrentEpochDate());
     expect(validToken(payload)).toBe(false);
   });
 
@@ -29,9 +31,25 @@ describe("token utility module", () => {
       Math.floor(new Date().getTime() / 1000.0) + 3600;
     const payloadCopy = { ...payload, exp: notExpiredEpochTime };
 
-    const validToken = checkTokenExpiry(Math.floor(new Date().getTime() / 1000.0));
-
+    const validToken = checkTokenExpiry(getCurrentEpochDate());
     expect(validToken(payloadCopy)).toBe(true);
+  });
+
+  test("check with null epoch date in event of system failure", () => {
+    const notExpiredEpochTime =
+      Math.floor(new Date().getTime() / 1000.0) + 3600;
+    const payloadCopy = { ...payload, exp: notExpiredEpochTime };
+
+    const validToken = checkTokenExpiry(null);
+    expect(validToken(payloadCopy)).toBe(false);
+  });
+
+  test("check with null payload date in event of receiving a malformed expiration date", () => {
+    const notExpiredEpochTime = null
+    const payloadCopy = { ...payload, exp: notExpiredEpochTime };
+
+    const validToken = checkTokenExpiry(getCurrentEpochDate());
+    expect(validToken(payloadCopy)).toBe(false);
   });
 
   test("check valid auth domain", () => {
@@ -46,13 +64,11 @@ describe("token utility module", () => {
 
   test("check token audience with correct host", () => {
     const audience = checkTokenAudience(process.env.HOST, process.env.PORT);
-
     expect(audience(payload)).toBe(true);
   });
 
   test("check token audience with invalid host", () => {
     const audience = checkTokenAudience(null, 1234);
-
     expect(audience(payload)).toBe(false);
   });
 });
@@ -70,7 +86,7 @@ describe("token pipeline module", () => {
 
   test("run through token validation pipeline", () => {
     const validToken = tokenPipe(
-      checkTokenExpiry(Math.floor(new Date().getTime() / 1000.0)),
+      checkTokenExpiry(getCurrentEpochDate()),
       checkTokenAudience(process.env.HOST, process.env.PORT),
       checkValidAuthDomain(process.env.TEST_AUTH_DOMAIN)
     );
