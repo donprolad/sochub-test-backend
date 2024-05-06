@@ -36,6 +36,15 @@ export const checkTokenAudience = (...searchParams) => (payload) =>
     .reduce((acc, v) => (acc = acc && v), true);
 
 /**
+ * @function checkClientId
+ * @param {string} clientId
+ * @param {object} payload
+ * @description partially applied function that checks the client application id 
+ */
+export const checkClientId = (clientId) => (payload) =>
+  payload?.azp === clientId ? true : false
+
+/**
  * @function tokenPipe
  * @param  {...function} fns
  * @param  {payload} payload
@@ -47,5 +56,6 @@ export const tokenPipe = (...fns) => (payload) =>
 export default tokenPipe(
   checkValidAuthDomain(process.env.AUTH_DOMAIN),
   checkTokenAudience(process.env.HOST, process.env.PORT),
-  checkTokenExpiry(getCurrentEpochDate())
+  checkTokenExpiry(getCurrentEpochDate()),
+  checkClientId(process.env.CLIENT_ID)
 );
