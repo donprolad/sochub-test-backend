@@ -5,6 +5,7 @@ import {
   checkTokenExpiry,
   checkValidAuthDomain,
   checkTokenAudience,
+  checkClientId,
   tokenPipe,
 } from "../../../src/utils/token-utils";
 
@@ -71,6 +72,22 @@ describe("token utility module", () => {
     const audience = checkTokenAudience(null, 1234);
     expect(audience(payload)).toBe(false);
   });
+
+  test("check token client app id", () => {
+    const audience = checkClientId(process.env.TEST_CLIENT_ID);
+    expect(audience(payload)).toBe(true);
+  });
+
+  test("check token with invalid client app id on system", () => {
+    const audience = checkClientId(null);
+    expect(audience(payload)).toBe(false);
+  });
+
+  test("check token with invalid client app id on payload", () => {
+    const payloadCopy = { ...payload, azp: "invalidid1234" };
+    const audience = checkClientId(process.env.TEST_CLIENT_ID);
+    expect(audience(payloadCopy)).toBe(false);
+  });
 });
 
 describe("token pipeline module", () => {
@@ -88,7 +105,8 @@ describe("token pipeline module", () => {
     const validToken = tokenPipe(
       checkTokenExpiry(getCurrentEpochDate()),
       checkTokenAudience(process.env.HOST, process.env.PORT),
-      checkValidAuthDomain(process.env.TEST_AUTH_DOMAIN)
+      checkValidAuthDomain(process.env.TEST_AUTH_DOMAIN),
+      checkClientId(process.env.TEST_CLIENT_ID)
     );
 
     const result = validToken(payload);
