@@ -3,21 +3,18 @@ import prisma from "./helper.js";
 export const registerHandler = async (registrationData) => {
   try {
     const { organization, user } = registrationData;
+
     const registered = await prisma.user.create({
       include: {
-        organization: {
-          create: {
-            name: organization?.name,
-          },
-        },
-        userrole: {
-          create: {
-            name: "owner",
-          },
-        },
+        organisation: true,
       },
       data: {
         ...user,
+        organisation: {
+          create: {
+            name: organization,
+          },
+        },
       },
     });
 
