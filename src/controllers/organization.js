@@ -11,7 +11,7 @@ export const getAllOrganisations = async (_, res) =>
       found?.success ? res.status(200).json(found) : res.status(400).json(found)
     )
     .catch((err) => res.status(400).json(err));
-    
+
 export const getOrganizationById = async (req, res) =>
   await getOrganizationByIdHandler(req?.params?.id)
     .then((found) =>
