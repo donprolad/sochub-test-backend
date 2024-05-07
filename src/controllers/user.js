@@ -1,8 +1,8 @@
 import {
   getAllUsersHandler,
   createUserByOrganisationByHandler,
-} from "../db/user.js";
-import { getOrganizationByIdHandler } from "../db/organisation.js";
+} from "../modules/db/user.js";
+import { getOrganizationByIdHandler } from "../modules/db/organisation.js";
 
 export const createUserByOrganizationId = async (req, res) =>
   await getOrganizationByIdHandler(req?.params?.id)

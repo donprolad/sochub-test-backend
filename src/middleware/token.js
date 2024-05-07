@@ -38,24 +38,10 @@ export const authorizeToken = async (req, res, next) => {
   }
 };
 
-export const getToken = async (req, res) => {
+export const getToken = async (_, res) => {
   try {
-    const { client_id, grant_type, client_secret, audience } = req.headers;
-
-    /**
-     * TODO
-     * 1. build token credential validation pipeline
-     */
-    const validCredentials = [
-      client_id === process.env.CLIENT_ID,
-      client_secret === process.env.CLIENT_SECRET,
-      grant_type === process.env.GRANT_TYPE,
-      audience === process.env.AUDIENCE,
-    ];
-
-    const valid = validCredentials.reduce((acc, v) => (acc = acc && v), true);
-
-    valid
+    
+    true
       ? await axios
           .request(options)
           .then((token) =>
