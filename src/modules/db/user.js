@@ -54,3 +54,31 @@ export const getAllUsersHandler = async () =>
       message: "Error occurred, unable to find users",
       err,
     }));
+
+export const getUserByEmailAddressHandler = async (emailAddress) =>
+  await prisma.user
+    .findUnique({
+      where: {
+        email: emailAddress,
+      },
+    })
+
+    .then((foundUser) =>
+      foundUser != null
+        ? {
+            success: true,
+            message: "Found user",
+            data: foundUser,
+          }
+        : {
+            success: false,
+            message: "Unable to find user",
+            data: foundUser,
+          }
+    )
+
+    .catch((err) => ({
+      success: false,
+      message: "Error occurred, unable to find user",
+      err,
+    }));

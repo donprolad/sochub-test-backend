@@ -3,7 +3,7 @@ import {
   getOrganizationByIdHandler,
   updateOrganisationByIdHandler,
   createOrganisationHandler,
-} from "../db/organisation.js";
+} from "../modules/db/organisation.js";
 
 export const getAllOrganisations = async (_, res) =>
   await getAllOrganisationsHandler()

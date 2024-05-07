@@ -1,8 +1,11 @@
 import prisma from "./helper.js";
+import bcrypt from "bcrypt";
 
 export const registerHandler = async (registrationData) => {
   try {
     const { organization, user } = registrationData;
+
+    const hash = await bcrypt.hashSync(user?.password, 10);
 
     const registered = await prisma.user.create({
       include: {
@@ -10,6 +13,7 @@ export const registerHandler = async (registrationData) => {
       },
       data: {
         ...user,
+        password: hash,
         organisation: {
           create: {
             name: organization,
