@@ -1,7 +1,6 @@
 import { registerHandler } from "../modules/db/global.js";
-
-import prisma from '../modules/db/helper.js'
-import bcrypt from 'bcrypt'
+import { getUserByEmailAddressHandler } from "../modules/db/user.js";
+import bcrypt from "bcrypt";
 
 export const register = async (req, res) =>
   await registerHandler(req?.body)
@@ -12,32 +11,27 @@ export const register = async (req, res) =>
     )
     .catch((err) => res.status(400).json(err));
 
-export const login = async (req, res, next) => {
-  const { password, email } = req.body;
+export const login = async (req, res, next) =>
+  await getUserByEmailAddressHandler(req.body?.email)
+    .then((foundUser) => foundUser)
+    .then(async (found) =>
+      found?.success
+        ? await bcrypt.compare(
+            req.body?.password,
+            found?.data?.password,
+            (err, found) =>
+              found === true
+                ? next()
+                : res.status(400).json({
+                    success: false,
+                    message: "Authentication failed",
+                    err,
+                  })
+          )
+        : res.status(400).json(found)
+    )
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-
-  if (user == null) {
-    return res.status(400).json({
-      success: false,
-      message: "User does not exist.",
-    });
-  } else {
-    return await bcrypt.compare(password, user?.password, (err, found) => {
-      found
-        ? next()
-        : res.status(400).json({
-            success: false,
-            message: "Unsuccessful login attempt.",
-            err,
-          });
-    });
-  }
-};
+    .catch((err) => res.status(400).json(err));
 
 export const forgotPassword = async (req, res) =>
   await res.status(200).json({ success: true, message: "To be implemented" });
