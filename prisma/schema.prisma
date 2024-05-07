@@ -32,6 +32,8 @@ model User {
   password        String       @db.VarChar(255)
   organisation_id String       @db.VarChar()
   organisation    Organization @relation(fields: [organisation_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  account_locked  Boolean      @default(false)
+  failed_logins   Int          @default(0)
   createdAt       DateTime     @default(now()) @db.Timestamp()
   updatedAt       DateTime     @default(now()) @db.Timestamp()
   UserRole        UserRole[]
