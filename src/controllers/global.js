@@ -16,9 +16,7 @@ export const login = async (req, res, next) =>
     .then((foundUser) => foundUser)
     .then(async (found) =>
       found?.success
-        ? await bcrypt.compare(
-            req.body?.password,
-            found?.data?.password,
+        ? await bcrypt.compare(req.body?.password, found?.data?.password,
             (err, found) =>
               found === true
                 ? next()
