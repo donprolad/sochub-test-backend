@@ -25,3 +25,10 @@ export const registrationSchema = Joi.object({
   }),
   organization: Joi.string().required(),
 });
+
+export const forgottenPasswordSchema = Joi.object({
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .pattern(new RegExp("^[a-z0-9@.]"))
+    .required(),
+});

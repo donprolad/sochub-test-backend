@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import generator from "generate-password";
 import { updateUserPasswordByEmailHandler } from "./db/user.js";
 
+
 export const updateForgottenPassword = async (found) => {
   try {
     if (found?.success) {
