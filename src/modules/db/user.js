@@ -1,3 +1,4 @@
+import { resetPassword } from "../../controllers/global.js";
 import prisma from "./helper.js";
 
 export const createUserByOrganisationByHandler = async (
@@ -82,3 +83,36 @@ export const getUserByEmailAddressHandler = async (emailAddress) =>
       message: "Error occurred, unable to find user",
       err,
     }));
+
+export const updateUserPasswordByEmailHandler = async (email, hash) =>
+  await prisma.user
+    .update({
+      where: {
+        email
+      },
+      data: {
+        password: hash,
+      },
+    })
+
+    .then((updatedUser) =>
+      updatedUser != null
+        ? {
+            success: true,
+            message: "Updated user details",
+            data: updatedUser,
+          }
+        : {
+            success: false,
+            message: "User not found",
+            data: updatedUser,
+          }
+    )
+
+    .catch((err) => 
+      ({
+        success: false,
+        message: "Error occurred, unable to update password.",
+        err,
+      })
+    );

@@ -1,5 +1,6 @@
 import { registerHandler } from "../modules/db/global.js";
 import { getUserByEmailAddressHandler } from "../modules/db/user.js";
+import { updateForgottenPassword } from "../modules/auth.js";
 import bcrypt from "bcrypt";
 
 export const register = async (req, res) =>
@@ -13,12 +14,13 @@ export const register = async (req, res) =>
 
 export const login = async (req, res, next) =>
   await getUserByEmailAddressHandler(req.body?.email)
-    .then((foundUser) => foundUser)
     .then(async (found) =>
       found?.success
-        ? await bcrypt.compare(req.body?.password, found?.data?.password,
-            (err, found) =>
-              found === true
+        ? await bcrypt.compare(
+            req.body?.password,
+            found?.data?.password,
+            (err, authenticated) =>
+              authenticated === true
                 ? next()
                 : res.status(400).json({
                     success: false,
@@ -32,7 +34,16 @@ export const login = async (req, res, next) =>
     .catch((err) => res.status(400).json(err));
 
 export const forgotPassword = async (req, res) =>
-  await res.status(200).json({ success: true, message: "To be implemented" });
+  await getUserByEmailAddressHandler(req?.body?.email)
+    .then(updateForgottenPassword)
+
+    .then((updated) =>
+      updated?.success
+        ? res.status(201).json(updated)
+        : res.status(400).json(updated)
+    )
+
+    .catch((err) => res.json(400).json(err));
 
 export const resetPassword = async (req, res) =>
   await res.status(200).json({ success: true, message: "To be implemented" });
