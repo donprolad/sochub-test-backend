@@ -1,8 +1,7 @@
 import { registerHandler } from "../modules/db/global.js";
-import { getUserByEmailAddressHandler } from "../modules/db/user.js";
+import { getUserByEmailAddressHandler, updateUserPasswordByEmailHandler } from "../modules/db/user.js";
 import {
-  updateForgottenPassword,
-  resetPasswordHandler,
+  updateForgottenPassword
 } from "../modules/auth.js";
 import bcrypt from "bcrypt";
 
@@ -50,12 +49,39 @@ export const forgotPassword = async (req, res) =>
 
 export const resetPassword = async (req, res) =>
   await getUserByEmailAddressHandler(req?.body.email)
-    .then((found) => {
-      return resetPasswordHandler(found, req?.query?.reset, req?.body?.password)
-    })
-    .then((reset) =>
-      reset?.success 
-      ? res.status(201).json(reset) 
-      : res.status(400).json(reset)
+    .then(async (found) =>
+      found?.success
+        ? (await bcrypt.compare(req.query?.reset, found?.data?.password))
+          ? {
+              success: true,
+              message: "Authentication successful",
+            }
+          : {
+              success: false,
+              message: "Authentication failed",
+            }
+        : found
     )
+
+    .then(async (passwordCanBeReset) =>
+      passwordCanBeReset.success
+        ? {
+            success: true,
+            message: "Password updated",
+            data: await bcrypt.hashSync(req.body.password, 10),
+          }
+        : passwordCanBeReset
+    )
+
+    .then(async hashed => hashed?.success 
+        ? await updateUserPasswordByEmailHandler(req?.body?.email, hashed?.data) 
+        : hashed
+      )
+
+    .then((updated) =>
+      updated?.success
+        ? res.status(201).json(updated)
+        : res.status(400).json(updated)
+    )
+
     .catch((err) => res.status(400).json(err));
