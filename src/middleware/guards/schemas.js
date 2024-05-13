@@ -24,7 +24,7 @@ export const registrationSchema = Joi.object({
       .required(),
   }),
   organization: Joi.string().required(),
-});
+}).xor("password", "access_token");
 
 export const forgottenPasswordSchema = Joi.object({
   email: Joi.string()
