@@ -11,6 +11,7 @@ import {
   passwordSchema,
   registrationSchema,
   forgottenPasswordSchema,
+  resetPasswordSchema
 } from "../middleware/guards/schemas.js";
 import { guard } from "../middleware/guards/helper.js";
 
@@ -22,6 +23,7 @@ systemRouter.route("/login").post(guard(passwordSchema), login, getToken);
 systemRouter
   .route("/forgot_password")
   .post(guard(forgottenPasswordSchema), forgotPassword);
-systemRouter.route("/reset_password").post(resetPassword);
+systemRouter.route("/reset_password").post(guard(resetPasswordSchema), resetPassword);
+
 
 export default systemRouter;
