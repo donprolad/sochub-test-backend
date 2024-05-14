@@ -1,5 +1,8 @@
 import { registerHandler } from "../modules/db/global.js";
-import { getUserByEmailAddressHandler } from "../modules/db/user.js";
+import { getUserByEmailAddressHandler, updateUserPasswordByEmailHandler } from "../modules/db/user.js";
+import {
+  updateForgottenPassword
+} from "../modules/auth.js";
 import bcrypt from "bcrypt";
 
 export const register = async (req, res) =>
@@ -13,12 +16,13 @@ export const register = async (req, res) =>
 
 export const login = async (req, res, next) =>
   await getUserByEmailAddressHandler(req.body?.email)
-    .then((foundUser) => foundUser)
     .then(async (found) =>
       found?.success
-        ? await bcrypt.compare(req.body?.password, found?.data?.password,
-            (err, found) =>
-              found === true
+        ? await bcrypt.compare(
+            req.body?.password,
+            found?.data?.password,
+            (err, authenticated) =>
+              authenticated === true
                 ? next()
                 : res.status(400).json({
                     success: false,
@@ -32,7 +36,52 @@ export const login = async (req, res, next) =>
     .catch((err) => res.status(400).json(err));
 
 export const forgotPassword = async (req, res) =>
-  await res.status(200).json({ success: true, message: "To be implemented" });
+  await getUserByEmailAddressHandler(req?.body?.email)
+    .then(updateForgottenPassword)
+
+    .then((updated) =>
+      updated?.success
+        ? res.status(201).json(updated)
+        : res.status(400).json(updated)
+    )
+
+    .catch((err) => res.json(400).json(err));
 
 export const resetPassword = async (req, res) =>
-  await res.status(200).json({ success: true, message: "To be implemented" });
+  await getUserByEmailAddressHandler(req?.body.email)
+    .then(async (found) =>
+      found?.success
+        ? (await bcrypt.compare(req.query?.reset, found?.data?.password))
+          ? {
+              success: true,
+              message: "Authentication successful",
+            }
+          : {
+              success: false,
+              message: "Authentication failed",
+            }
+        : found
+    )
+
+    .then(async (passwordCanBeReset) =>
+      passwordCanBeReset.success
+        ? {
+            success: true,
+            message: "Password updated",
+            data: await bcrypt.hashSync(req.body.password, 10),
+          }
+        : passwordCanBeReset
+    )
+
+    .then(async hashed => hashed?.success 
+        ? await updateUserPasswordByEmailHandler(req?.body?.email, hashed?.data) 
+        : hashed
+      )
+
+    .then((updated) =>
+      updated?.success
+        ? res.status(201).json(updated)
+        : res.status(400).json(updated)
+    )
+
+    .catch((err) => res.status(400).json(err));

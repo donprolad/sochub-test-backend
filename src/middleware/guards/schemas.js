@@ -24,6 +24,13 @@ export const registrationSchema = Joi.object({
       .required(),
   }),
   organization: Joi.string().required(),
+}).xor("password", "access_token");
+
+export const forgottenPasswordSchema = Joi.object({
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .pattern(new RegExp("^[a-z0-9@.]"))
+    .required(),
 });
 
 export const resetPasswordSchema = Joi.object({
