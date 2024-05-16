@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 import generator from "generate-password";
-import { updateUserPasswordByEmailHandler } from "./db/user.js";
+import {
+  updateUserPasswordByEmailHandler,
+  getUserByEmailAddressHandler,
+} from "./db/user.js";
+import { comparePasswordAgainstHash } from "./authorisation/login.js";
 
 export const updateForgottenPassword = async (found) => {
   try {
@@ -44,3 +48,17 @@ export const updateForgottenPassword = async (found) => {
     };
   }
 };
+
+export const loginWithPassword = async (user) =>
+  await getUserByEmailAddressHandler(user?.email)
+    .then(async (found) =>
+      found?.success
+        ? await comparePasswordAgainstHash(
+            user?.password,
+            found?.data?.password
+          )
+        : found
+    )
+
+    .then((authenticated) => authenticated)
+    .catch((err) => err);
