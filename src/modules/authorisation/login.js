@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 
 export const comparePasswordAgainstHash = async (password, hash) =>
   (await bcrypt.compare(password, hash))
@@ -10,3 +10,15 @@ export const comparePasswordAgainstHash = async (password, hash) =>
         success: false,
         message: "Authentication failed",
       };
+
+export const checkifAccountIsLocked = (user) =>
+user?.success && user?.data?.account_locked !== true
+  ? found
+  : {
+      success: false,
+      message: "Account is locked, please reset your password.",
+      data: {
+        account_locked: user?.data?.account_locked,
+        failed_logins: user?.data?.failed_logins,
+      },
+    }

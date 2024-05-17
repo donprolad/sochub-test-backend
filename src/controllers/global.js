@@ -2,6 +2,7 @@ import { registerHandler } from "../modules/db/global.js";
 import {
   getUserByEmailAddressHandler,
   updateUserPasswordByEmailHandler,
+  resetLockCount,
 } from "../modules/db/user.js";
 import { updateForgottenPassword, loginWithPassword } from "../modules/auth.js";
 import bcrypt from "bcrypt";
@@ -62,7 +63,12 @@ export const resetPassword = async (req, res) =>
 
     .then(async (hashed) =>
       hashed?.success
-        ? await updateUserPasswordByEmailHandler(req?.body?.email, hashed?.data)
+        ? await updateUserPasswordByEmailHandler(
+            req?.body?.email,
+            hashed?.data
+          ).then(async (updated) =>
+            updated?.success ? await resetLockCount(updated) : updated
+          )
         : hashed
     )
 

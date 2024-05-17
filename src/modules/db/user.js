@@ -1,4 +1,3 @@
-import { resetPassword } from "../../controllers/global.js";
 import prisma from "./helper.js";
 
 export const createUserByOrganisationByHandler = async (
@@ -88,7 +87,7 @@ export const updateUserPasswordByEmailHandler = async (email, hash) =>
   await prisma.user
     .update({
       where: {
-        email
+        email,
       },
       data: {
         password: hash,
@@ -109,10 +108,66 @@ export const updateUserPasswordByEmailHandler = async (email, hash) =>
           }
     )
 
-    .catch((err) => 
-      ({
+    .catch((err) => ({
+      success: false,
+      message: "Error occurred, unable to update password.",
+      err,
+    }));
+
+export const incrementLockCount = async (user) =>
+  await prisma.user
+    .update({
+      where: {
+        email: user?.data?.email,
+      },
+      data: {
+        account_locked: user?.data?.failed_logins < 2 ? false : true,
+        failed_logins: user?.data.failed_logins + 1,
+      },
+    })
+
+    .then((userToBeLocked) => ({
+      success: false,
+      message: `Authentication failed, will lock on 3 failed attempts.`,
+      data: {
+        failed_logins: userToBeLocked?.failed_logins,
+        account_locked: userToBeLocked?.account_locked,
+      },
+    }))
+
+    .catch((err) => {
+      console.log(err)({
         success: false,
-        message: "Error occurred, unable to update password.",
+        message: "Error occurred",
         err,
-      })
-    );
+      });
+    });
+
+export const resetLockCount = async (user) =>
+  await prisma.user
+    .update({
+      where: {
+        email: user?.data?.email,
+      },
+      data: {
+        account_locked: false,
+        failed_logins: 0,
+      },
+    })
+
+    .then((userToBeUnLocked) => ({
+      success: true,
+      message: `Authentication successful`,
+      data: {
+        failed_logins: userToBeUnLocked?.failed_logins,
+        account_locked: userToBeUnLocked?.account_locked,
+      },
+    }))
+
+    .catch((err) => {
+      console.log(err)({
+        success: false,
+        message: "Error occurred, unable to unlock account",
+        err,
+      });
+    });
