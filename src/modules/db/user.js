@@ -135,13 +135,11 @@ export const incrementLockCount = async (user) =>
       },
     }))
 
-    .catch((err) => {
-      console.log(err)({
-        success: false,
-        message: "Error occurred",
-        err,
-      });
-    });
+    .catch((err) => ({
+      success: false,
+      message: "Error occurred",
+      err,
+    }));
 
 export const resetLockCount = async (user) =>
   await prisma.user
@@ -164,10 +162,8 @@ export const resetLockCount = async (user) =>
       },
     }))
 
-    .catch((err) => {
-      console.log(err)({
-        success: false,
-        message: "Error occurred, unable to unlock account",
-        err,
-      });
-    });
+    .catch((err) => ({
+      success: false,
+      message: "Error occurred, unable to unlock account",
+      err,
+    }));
