@@ -3,8 +3,13 @@ import generator from "generate-password";
 import {
   updateUserPasswordByEmailHandler,
   getUserByEmailAddressHandler,
+  incrementLockCount,
+  resetLockCount,
 } from "./db/user.js";
-import { comparePasswordAgainstHash } from "./authorisation/login.js";
+import {
+  comparePasswordAgainstHash,
+  checkifAccountIsLocked,
+} from "./authorisation/login.js";
 
 export const updateForgottenPassword = async (found) => {
   try {
@@ -51,11 +56,16 @@ export const updateForgottenPassword = async (found) => {
 
 export const loginWithPassword = async (user) =>
   await getUserByEmailAddressHandler(user?.email)
+    .then(checkifAccountIsLocked)
     .then(async (found) =>
       found?.success
         ? await comparePasswordAgainstHash(
             user?.password,
             found?.data?.password
+          ).then(async (authenticated) =>
+            authenticated?.success
+              ? await resetLockCount(found)
+              : await incrementLockCount(found)
           )
         : found
     )
