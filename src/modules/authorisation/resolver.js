@@ -1,4 +1,4 @@
-const lock = (user) =>
+export const lock = (user) =>
   ({
     LOCK: {
       where: {

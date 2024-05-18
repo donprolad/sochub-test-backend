@@ -1,5 +1,4 @@
 import bcrypt from "bcrypt";
-import generator from "generate-password";
 import {
   updateUserPasswordByEmailHandler,
   getUserByEmailAddressHandler,
@@ -11,18 +10,21 @@ import {
 } from "./authorisation/login.js";
 import accountStateResolver from "./authorisation/resolver.js"
 
+import crypto from "crypto"
+
 export const updateForgottenPassword = async (found) => {
   try {
     if (found?.success) {
-      const temporaryPassword = generator.generate({
-        length: 32,
-        symbols: true,
-        numbers: true,
-        lowercase: true,
-        uppercase: true,
-      });
+      // const temporaryPassword = generator.generate({
+      //   length: 32,
+      //   symbols: true,
+      //   numbers: true,
+      //   lowercase: true,
+      //   uppercase: true,
+      //   strict: true
+      // });
 
-      console.log(temporaryPassword);
+      const temporaryPassword = crypto.randomBytes(32).toString('hex')
 
       const hash = await bcrypt.hashSync(temporaryPassword, 10);
 

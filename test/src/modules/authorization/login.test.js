@@ -1,4 +1,5 @@
-import { comparePasswordAgainstHash, lock } from "../../../../src/modules/authorisation/login.js"
+import { comparePasswordAgainstHash } from "../../../../src/modules/authorisation/login.js"
+import { lock } from "../../../../src/modules/authorisation/resolver.js"
 import bcrypt from "bcrypt"
 
 describe("bcrypt compare module", () => {

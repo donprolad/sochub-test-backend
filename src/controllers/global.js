@@ -2,10 +2,12 @@ import { registerHandler } from "../modules/db/global.js";
 import {
   getUserByEmailAddressHandler,
   updateUserPasswordByEmailHandler,
-  resetLockCount,
+  lockAccount,
 } from "../modules/db/user.js";
 import { updateForgottenPassword, loginWithPassword } from "../modules/auth.js";
+import accountStateResolver from "../modules/authorisation/resolver.js";
 import bcrypt from "bcrypt";
+
 
 export const register = async (req, res) =>
   await registerHandler(req?.body)
@@ -39,7 +41,7 @@ export const resetPassword = async (req, res) =>
   await getUserByEmailAddressHandler(req?.body.email)
     .then(async (found) =>
       found?.success
-        ? (await bcrypt.compare(req.query?.reset, found?.data?.password))
+        ? (await bcrypt.compare(decodeURI(req.query?.reset), found?.data?.password))
           ? {
               success: true,
               message: "Authentication successful",
@@ -67,7 +69,11 @@ export const resetPassword = async (req, res) =>
             req?.body?.email,
             hashed?.data
           ).then(async (updated) =>
-            updated?.success ? await resetLockCount(updated) : updated
+            updated?.success
+              ? await lockAccount(
+                  accountStateResolver({ ...updated?.data }, "UNLOCK")
+                )
+              : updated
           )
         : hashed
     )
