@@ -12,13 +12,14 @@ export const comparePasswordAgainstHash = async (password, hash) =>
       };
 
 export const checkifAccountIsLocked = (user) =>
-user?.success && user?.data?.account_locked !== true
-  ? user
-  : {
-      success: false,
-      message: "Account is locked, please reset your password.",
-      data: {
-        account_locked: user?.data?.account_locked,
-        failed_logins: user?.data?.failed_logins,
-      },
-    }
+  user?.success && user?.data?.account_locked !== true
+    ? user
+    : {
+        success: false,
+        message: "Account is locked, please reset your password.",
+        data: {
+          account_locked: user?.data?.account_locked,
+          failed_logins: user?.data?.failed_logins,
+        },
+      };
+

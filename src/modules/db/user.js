@@ -114,56 +114,33 @@ export const updateUserPasswordByEmailHandler = async (email, hash) =>
       err,
     }));
 
-export const incrementLockCount = async (user) =>
+export const lockAccount = async (payload) =>
   await prisma.user
-    .update({
-      where: {
-        email: user?.data?.email,
-      },
-      data: {
-        account_locked: user?.data?.failed_logins < 2 ? false : true,
-        failed_logins: user?.data.failed_logins + 1,
-      },
-    })
-
-    .then((userToBeLocked) => ({
-      success: false,
-      message: `Authentication failed, will lock on 3 failed attempts.`,
-      data: {
-        failed_logins: userToBeLocked?.failed_logins,
-        account_locked: userToBeLocked?.account_locked,
-      },
-    }))
+    .update(payload)
+    .then((userLocked) =>
+      userLocked?.failed_logins > 0
+        ? {
+            success: false,
+            message: userLocked?.account_locked
+              ? "Your account has been locked, please reset your password"
+              : `Authentication failed, with ${userLocked?.failed_logins} login attempts.`,
+            data: {
+              account_locked: userLocked?.account_locked,
+              failed_logins: userLocked?.failed_logins,
+            },
+          }
+        : {
+            success: true,
+            message: "Authentication successful",
+            data: {
+              account_locked: userLocked?.account_locked,
+              failed_logins: userLocked?.failed_logins,
+            },
+          }
+    )
 
     .catch((err) => ({
       success: false,
-      message: "Error occurred",
-      err,
-    }));
-
-export const resetLockCount = async (user) =>
-  await prisma.user
-    .update({
-      where: {
-        email: user?.data?.email,
-      },
-      data: {
-        account_locked: false,
-        failed_logins: 0,
-      },
-    })
-
-    .then((userToBeUnLocked) => ({
-      success: true,
-      message: `Authentication successful`,
-      data: {
-        failed_logins: userToBeUnLocked?.failed_logins,
-        account_locked: userToBeUnLocked?.account_locked,
-      },
-    }))
-
-    .catch((err) => ({
-      success: false,
-      message: "Error occurred, unable to unlock account",
+      message: "Error occured, unable to lock or unlock the user account",
       err,
     }));
