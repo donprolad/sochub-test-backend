@@ -2,29 +2,20 @@ import bcrypt from "bcrypt";
 import {
   updateUserPasswordByEmailHandler,
   getUserByEmailAddressHandler,
-  lockAccount
+  lockAccount,
 } from "./db/user.js";
 import {
   comparePasswordAgainstHash,
   checkifAccountIsLocked,
 } from "./authorisation/login.js";
-import accountStateResolver from "./authorisation/resolver.js"
+import accountStateResolver from "./authorisation/resolver.js";
 
-import crypto from "crypto"
+import crypto from "crypto";
 
 export const updateForgottenPassword = async (found) => {
   try {
     if (found?.success) {
-      // const temporaryPassword = generator.generate({
-      //   length: 32,
-      //   symbols: true,
-      //   numbers: true,
-      //   lowercase: true,
-      //   uppercase: true,
-      //   strict: true
-      // });
-
-      const temporaryPassword = crypto.randomBytes(32).toString('hex')
+      const temporaryPassword = crypto.randomBytes(32).toString("hex");
 
       const hash = await bcrypt.hashSync(temporaryPassword, 10);
 
@@ -59,18 +50,20 @@ export const updateForgottenPassword = async (found) => {
 export const loginWithPassword = async (user) =>
   await getUserByEmailAddressHandler(user?.email)
     .then(checkifAccountIsLocked)
-    .then(async (found) =>
-      found?.success
-        ? await comparePasswordAgainstHash(
-            user?.password,
-            found?.data?.password
-          ).then(async (authenticated) =>
-            authenticated?.success
-              ? await lockAccount(accountStateResolver({...found?.data}, "UNLOCK"))
-              : await lockAccount(accountStateResolver({...found?.data}, "LOCK"))
-          )
-        : found
-    )
-
+    .then(async (found) => await authenticateAndLockAccount(found, user))
     .then((authenticated) => authenticated)
     .catch((err) => err);
+
+const authenticateAndLockAccount = async (found, user) =>
+  found?.success
+    ? await comparePasswordAgainstHash(
+        user?.password,
+        found?.data?.password
+      ).then(async (authenticated) =>
+        authenticated?.success
+          ? await lockAccount(
+              accountStateResolver({ ...found?.data }, "UNLOCK")
+            )
+          : await lockAccount(accountStateResolver({ ...found?.data }, "LOCK"))
+      )
+    : found;
