@@ -58,7 +58,7 @@ export const loginWithPassword = async (user) =>
 const authenticateAndLockAccount = async (found, user) =>
   found?.success
     ? await comparePasswordAgainstHash(user?.password,found?.data?.password)
-      .then(async (authenticated) =>authenticated?.success
+      .then(async (authenticated) => authenticated?.success
           ? await lockAccount(accountStateResolver({ ...found?.data }, "UNLOCK"))
           : await lockAccount(accountStateResolver({ ...found?.data }, "LOCK"))
       )
