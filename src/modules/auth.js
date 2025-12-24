@@ -18,6 +18,9 @@ export const updateForgottenPassword = async (found) => {
     if (found?.success) {
       const temporaryPassword = crypto.randomBytes(32).toString("hex");
 
+      
+      //crypto.createHash('sha256').update(resetToken).digest('hex')
+
       const hash = await bcrypt.hashSync(temporaryPassword, 10);
 
       const updatedUser = await updateUserPasswordByEmailHandler(
